@@ -6,7 +6,7 @@
 
   outputs = { self, nixpkgs, microvm }: let
     system = "x86_64-linux";
-    name = "shell-example";
+    name = "immaculate";
   in {
     packages.${system} = {
       default = self.packages.${system}.${name};
@@ -51,8 +51,6 @@
             }
           )
         ];
-        # TODO: Add networking via bridge
-        # https://astro.github.io/microvm.nix/simple-network.html
       };
     };
   };
