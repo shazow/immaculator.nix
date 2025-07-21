@@ -48,10 +48,12 @@
       ];
     }).config.microvm.declaredRunner;
   in {
-    inherit mkImmaculate;
-
     packages.${system} = {
       default = mkImmaculate {};
+    };
+
+    lib = {
+      inherit mkImmaculate defaultConfiguration defaultMicroVM;
     };
   };
 }
