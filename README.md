@@ -4,7 +4,23 @@ Run your vibecoding inside a microvm, to ensure that the vibes are immaculate.
 
 Powered by [microvm.nix](https://github.com/astro/microvm.nix).
 
-**Status**: WIP, still experimenting with ergonomics.
+**Status**: Unstable, still experimenting with ergonomics.
+
+## Usage
+
+```nix
+{
+  inputs.immaculator = {
+    url = "github:shazow/immaculator.nix";
+  };
+
+  outputs = { self, immaculator }: {
+    # Run with:
+    # $ nix run .
+    packages.x86_64-linux.default = immaculator.lib.mkImmaculate {};
+  };
+}
+```
 
 ## Goals
 

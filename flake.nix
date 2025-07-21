@@ -9,6 +9,7 @@
 
     defaultMicroVM = {
       mem = 1024;
+      # TODO: Add a version of this for qemu?
       # hotplugMem = 2048; # cloud-hypervisor: Extra memory that can be added if there's memory pressure
       storeOnDisk = true;
       writableStoreOverlay = "/nix/.rw-store";
