@@ -30,7 +30,6 @@
 
         extraShares = [
           {
-            proto = "9p";
             tag = "gemini-config";
             source = "/home/shazow/.gemini";
             mountPoint = "/home/user/.gemini";

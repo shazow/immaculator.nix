@@ -42,6 +42,18 @@
         enable = true;
         wheelNeedsPassword = false;
       };
+
+      environment.systemPackages = [ pkgs.bindfs ];
+      # TODO: Generalize this across shares
+      fileSystems."/home/user/src" = {
+        device = "/mnt/src";
+        fsType = "fuse.bindfs";
+        options = [
+          "force-user=1000"
+          "force-group=100"
+          "nofail"
+        ];
+      };
     };
 
     mkImmaculate = {
@@ -58,11 +70,12 @@
         {
           microvm = vm // {
             shares = [
+              # We bindfs this one to $HOME/src with uid=1000
               {
-                proto = "9p";
                 tag = "src";
                 source = srcPath;
-                mountPoint = "/home/${user}/src";
+                securityModel = "mapped";
+                mountPoint = "/mnt/src";
               }
             ] ++ extraShares;
           };
