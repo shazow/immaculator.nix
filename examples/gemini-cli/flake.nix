@@ -26,14 +26,14 @@
       packages.microvm = immaculator.lib.mkImmaculate {
         devShell = devShells.default;
 
-        srcPath = "../../";
+        srcPath = ".";
 
         extraShares = [
           {
             proto = "9p";
             tag = "gemini-config";
             source = "/home/shazow/.gemini";
-            mountPoint = "/root/.gemini";
+            mountPoint = "/home/user/.gemini";
           }
           # TODO: Add ~/.config/git/config share and other things?
         ];

@@ -6,14 +6,15 @@
 
   outputs = { nixpkgs, microvm, ... }: let
     system = "x86_64-linux";
+    user = "user";
 
     defaultMicroVM = {
-      mem = 1024;
+      hypervisor = "qemu";
+      mem = 3072;
       # TODO: Add a version of this for qemu?
       # hotplugMem = 2048; # cloud-hypervisor: Extra memory that can be added if there's memory pressure
       storeOnDisk = true;
       writableStoreOverlay = "/nix/.rw-store";
-      hypervisor = "qemu";
       interfaces = [
         {
           type = "user";
@@ -31,7 +32,16 @@
       };
       systemd.network.enable = true;
 
-      services.getty.autologinUser = "root";
+      services.getty.autologinUser = user;
+      users.users.${user} = {
+        password = "";
+        group = "wheel";
+        isNormalUser = true;
+      };
+      security.sudo = {
+        enable = true;
+        wheelNeedsPassword = false;
+      };
     };
 
     mkImmaculate = {
@@ -52,7 +62,7 @@
                 proto = "9p";
                 tag = "src";
                 source = srcPath;
-                mountPoint = "/root/src";
+                mountPoint = "/home/${user}/src";
               }
             ] ++ extraShares;
           };
