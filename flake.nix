@@ -4,7 +4,7 @@
     inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, microvm }: let
+  outputs = { nixpkgs, microvm, ... }: let
     system = "x86_64-linux";
 
     defaultMicroVM = {
@@ -35,18 +35,39 @@
     };
 
     mkImmaculate = {
+      srcPath ? "./", # Path to mount to $HOME/src
       devShell ? null, # Derivation to include in the environment
+      extraPackages ? [],
+      extraShares ? [],
       configuration ? defaultConfiguration,
       vm ? defaultMicroVM,
     }: (nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
         microvm.nixosModules.microvm
-        { microvm = vm; }
+        {
+          microvm = vm // {
+            shares = [
+              {
+                proto = "9p";
+                tag = "src";
+                source = srcPath;
+                mountPoint = "/root/src";
+              }
+            ] ++ extraShares;
+          };
+        }
         configuration
+        { environment.systemPackages = extraPackages; }
+      ] ++ nixpkgs.lib.optional (devShell != null) {
         # Add devShell to the environment if provided
-        { environment.systemPackages = if devShell != null then [ devShell ] else []; }
-      ];
+        # mkDerivation documents as buildInputs for runtime dependencies, yet
+        # mkShell documents .packages for runtime dependencies and proceeds
+        # to merge them into buildNativeInputs instead of buildInputs. So
+        # we bring in both. -_-
+        environment.systemPackages = devShell.buildInputs ++ devShell.nativeBuildInputs;
+        programs.bash.loginShellInit = devShell.shellHook;
+      };
     }).config.microvm.declaredRunner;
   in {
     packages.${system} = {
